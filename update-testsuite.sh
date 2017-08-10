@@ -13,9 +13,8 @@ pushd "$spec" >/dev/null
 popd >/dev/null
 
 cp "$spec"/test/core/*.wast .
-cp "$spec"/test/core/expected-output/*.log expected-output
 
-for new in *.wast expected-output/*.log; do
+for new in *.wast; do
     git add "$new" || :
 done
 

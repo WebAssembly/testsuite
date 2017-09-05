@@ -12,7 +12,7 @@ set -o pipefail
 wabt="../wabt"
 wabtbin="$wabt/out"
 
-mkdir -p valid invalid malformed fail
+mkdir -p valid invalid malformed
 rm -f valid/*.wasm
 rm -f invalid/*.wasm
 rm -f malformed/*.wast

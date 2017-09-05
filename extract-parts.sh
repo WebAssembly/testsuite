@@ -27,8 +27,8 @@ done
 mv invalid/*.wast malformed
 
 for wasm in invalid/*.wasm; do
-    if ../wabt/out/wasm2wast "$wasm" -o invalid/t.wast 2>/dev/null && \
-       ../wabt/out/wast2wasm invalid/t.wast -o /dev/null 2>/dev/null ; then
+    if "$wabtbin/wasm2wast" "$wasm" -o invalid/t.wast 2>/dev/null && \
+       "$wabtbin/wast2wasm" invalid/t.wast -o /dev/null 2>/dev/null ; then
         mv "$wasm" valid
     fi
 done

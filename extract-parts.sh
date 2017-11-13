@@ -15,21 +15,21 @@ wabtbin="$wabt/out"
 mkdir -p valid invalid malformed
 rm -f valid/*.wasm
 rm -f invalid/*.wasm
-rm -f malformed/*.wast
+rm -f malformed/*.wat
 
-for wast in *.wast; do
-    base="${wast##*/}"
-    json="invalid/${base%.wast}.json"
-    "$wabtbin/wast2wasm" --spec "$wast" -o "$json"
+for wat in *.wat; do
+    base="${wat##*/}"
+    json="invalid/${base%.wat}.json"
+    "$wabtbin/wat2wasm" --spec "$wat" -o "$json"
     rm "$json"
 done
 
-mv invalid/*.wast malformed
+mv invalid/*.wat malformed
 
 for wasm in invalid/*.wasm; do
-    if "$wabtbin/wasm2wast" "$wasm" -o invalid/t.wast 2>/dev/null && \
-       "$wabtbin/wast2wasm" invalid/t.wast -o /dev/null 2>/dev/null ; then
+    if "$wabtbin/wasm2wat" "$wasm" -o invalid/t.wat 2>/dev/null && \
+       "$wabtbin/wat2wasm" invalid/t.wat -o /dev/null 2>/dev/null ; then
         mv "$wasm" valid
     fi
 done
-rm invalid/t.wast
+rm invalid/t.wat

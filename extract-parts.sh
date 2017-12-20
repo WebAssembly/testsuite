@@ -10,17 +10,17 @@ set -o pipefail
 #  - malformed - wasm text tests that fail to parse
 
 wabt="../wabt"
-wabtbin="$wabt/out"
+wabtbin="$wabt/bin"
 
 mkdir -p valid invalid malformed
 rm -f valid/*.wasm
 rm -f invalid/*.wasm
 rm -f malformed/*.wat
 
-for wat in *.wat; do
-    base="${wat##*/}"
-    json="invalid/${base%.wat}.json"
-    "$wabtbin/wat2wasm" --spec "$wat" -o "$json"
+for wast in *.wast; do
+    base="${wast##*/}"
+    json="invalid/${base%.wast}.json"
+    "$wabtbin/wast2json" "$wast" -o "$json"
     rm "$json"
 done
 

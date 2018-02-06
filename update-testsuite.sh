@@ -117,7 +117,7 @@ for repo in ${repos}; do
     echo -e "-- ${repo}\n"
 done
 
-# git commit -a -F commit_message
+git commit -a -F commit_message
 # git push
 
 echo "done"

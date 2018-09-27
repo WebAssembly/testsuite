@@ -3,7 +3,7 @@ set -e
 set -u
 set -o pipefail
 
-repos='spec threads simd exception-handling gc bulk-memory-operations tail-call nontrapping-float-to-int-conversions multi-value host-bindings sign-extension-ops mutable-global'
+repos='spec threads simd exception-handling gc bulk-memory-operations tail-call nontrapping-float-to-int-conversions multi-value host-bindings sign-extension-ops mutable-global reference-types'
 
 log_and_run() {
     echo ">>" $*

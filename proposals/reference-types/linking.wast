@@ -92,6 +92,23 @@
   "incompatible import type"
 )
 
+
+(module $Mref-ex
+  (global (export "g-const") funcref (ref.null))
+  (global (export "g-var") (mut funcref) (ref.null))
+)
+(register "Mref-ex" $Mref-ex)
+
+(module $Mref-im
+  (global (import "Mref-ex" "g-const") anyref)
+)
+
+(assert_unlinkable
+  (module (global (import "Mref-ex" "g-var") (mut anyref)))
+  "incompatible import type"
+)
+
+
 ;; Tables
 
 (module $Mt

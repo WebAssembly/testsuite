@@ -90,14 +90,14 @@ for repo in ${repos}; do
 
     if [ "${repo}" = "spec" ]; then
         wast_dir=.
-        log_and_run cp repos/${repo}/test/core/*.wast ${wast_dir}
+        log_and_run cp $(find repos/${repo}/test/core -name \*.wast) ${wast_dir}
     else
         wast_dir=proposals/${repo}
         mkdir -p ${wast_dir}
 
         # Don't add tests from propsoal that are the same as spec.
         pushdir repos/${repo}
-            for new in test/core/*.wast; do
+            for new in $(find test/core -name \*.wast); do
                 old=../../repos/spec/${new}
                 if [[ ! -f ${old} ]] || ! diff ${old} ${new} >/dev/null; then
                     log_and_run cp ${new} ../../${wast_dir}

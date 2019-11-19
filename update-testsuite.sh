@@ -65,9 +65,16 @@ merge_with_spec() {
         log_and_run git reset origin/master --hard
         try_log_and_run git merge -q spec/master -m "merged"
         if [ $? -ne 0 ]; then
-            git merge --abort
-            popdir
-            return 1
+            # Ignore merge conflicts in non-test directories.
+            # We don't care about those changes.
+            try_log_and_run git checkout --ours document interpreter
+            try_log_and_run git add document interpreter
+            try_log_and_run git -c core.editor=true merge --continue
+            if [ $? -ne 0 ]; then
+                git merge --abort
+                popdir
+                return 1
+            fi
         fi
     popdir
     return 0

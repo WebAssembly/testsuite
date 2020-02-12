@@ -3,7 +3,25 @@ set -e
 set -u
 set -o pipefail
 
-repos='spec threads simd exception-handling gc bulk-memory-operations tail-call nontrapping-float-to-int-conversions multi-value host-bindings sign-extension-ops reference-types'
+repos='
+  spec
+  threads
+  simd
+  exception-handling
+  gc
+  bulk-memory-operations
+  tail-call
+  nontrapping-float-to-int-conversions
+  multi-value
+  host-bindings
+  sign-extension-ops
+  reference-types
+  annotations
+'
+
+if [[ $# != 0 ]]; then
+  repos="$@"
+fi
 
 log_and_run() {
     echo ">>" $*

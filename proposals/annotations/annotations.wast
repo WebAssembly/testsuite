@@ -1,4 +1,5 @@
 (@a)
+
 (@aas-3!@$d-@#4)
 (@@) (@$) (@+) (@0) (@.) (@!$@#$23414@#$)
 (@a x y z)
@@ -9,13 +10,57 @@
 (@a , ; ] [ }} }x{ ({) ,{{};}] ;)
 (@a (bla) () (5-g) ("aa" a) ($x) (bla bla) (x (y)) ")" "(" x")"y)
 (@a @ @x (@x) (@x y) (@) (@ x) (@(@(@(@)))))
-(@a Heiße Würstchen   
-
-)
 (@a (;bla;) (; ) ;)
   ;; bla)
   ;; bla (@x
 )
+
+(assert_malformed (module quote "(@a \00)") "illegal character")
+(assert_malformed (module quote "(@a \01)") "illegal character")
+(assert_malformed (module quote "(@a \02)") "illegal character")
+(assert_malformed (module quote "(@a \03)") "illegal character")
+(assert_malformed (module quote "(@a \04)") "illegal character")
+(assert_malformed (module quote "(@a \05)") "illegal character")
+(assert_malformed (module quote "(@a \06)") "illegal character")
+(assert_malformed (module quote "(@a \07)") "illegal character")
+(assert_malformed (module quote "(@a \08)") "illegal character")
+(module quote "(@a \09)")  ;; \t
+(module quote "(@a \0a)")  ;; \n
+(assert_malformed (module quote "(@a \0b)") "illegal character")
+(assert_malformed (module quote "(@a \0c)") "illegal character")
+(module quote "(@a \0d)")  ;; \r
+(assert_malformed (module quote "(@a \0e)") "illegal character")
+(assert_malformed (module quote "(@a \0f)") "illegal character")
+(assert_malformed (module quote "(@a \10)") "illegal character")
+(assert_malformed (module quote "(@a \11)") "illegal character")
+(assert_malformed (module quote "(@a \12)") "illegal character")
+(assert_malformed (module quote "(@a \13)") "illegal character")
+(assert_malformed (module quote "(@a \14)") "illegal character")
+(assert_malformed (module quote "(@a \15)") "illegal character")
+(assert_malformed (module quote "(@a \16)") "illegal character")
+(assert_malformed (module quote "(@a \17)") "illegal character")
+(assert_malformed (module quote "(@a \18)") "illegal character")
+(assert_malformed (module quote "(@a \19)") "illegal character")
+(assert_malformed (module quote "(@a \1a)") "illegal character")
+(assert_malformed (module quote "(@a \1b)") "illegal character")
+(assert_malformed (module quote "(@a \1c)") "illegal character")
+(assert_malformed (module quote "(@a \1d)") "illegal character")
+(assert_malformed (module quote "(@a \1e)") "illegal character")
+(assert_malformed (module quote "(@a \1f)") "illegal character")
+(module quote "(@a \20)")  ;; space
+(assert_malformed (module quote "(@a \7f)") "illegal character")
+(assert_malformed (module quote "(@a \80)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \81)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \90)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \a0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \b0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \c0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \d0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \e0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \f0)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a \ff)") "malformed UTF-8 encoding")
+(assert_malformed (module quote "(@a Heiße Würstchen)") "illegal character")
+(assert_malformed (module quote "(@a )") "illegal character")
 
 (assert_malformed (module quote "( @a)") "unknown operator")
 

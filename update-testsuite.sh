@@ -1,4 +1,5 @@
 #!/bin/bash
+# Update tests based on upstream repositories.
 set -e
 set -u
 set -o pipefail

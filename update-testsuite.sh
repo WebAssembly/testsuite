@@ -14,10 +14,7 @@ repos='
   gc
   bulk-memory-operations
   tail-call
-  nontrapping-float-to-int-conversions
-  multi-value
   host-bindings
-  sign-extension-ops
   reference-types
   annotations
   function-references

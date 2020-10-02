@@ -18,6 +18,7 @@ repos='
   reference-types
   annotations
   function-references
+  memory64
 '
 
 log_and_run() {

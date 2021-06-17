@@ -44,10 +44,11 @@ popdir() {
 
 update_repo() {
     local repo=$1
+    local branch=$2
     pushdir repos
         if [ -d ${repo} ]; then
             log_and_run git -C ${repo} fetch origin
-            log_and_run git -C ${repo} reset origin/master --hard
+            log_and_run git -C ${repo} reset origin/${branch} --hard
         else
             log_and_run git clone https://github.com/WebAssembly/${repo}
         fi
@@ -67,18 +68,19 @@ update_repo() {
 
 merge_with_spec() {
     local repo=$1
+    local branch=$2
 
     [ "${repo}" == "spec" ] && return
 
     pushdir repos/${repo}
         # Create and checkout "try-merge" branch.
         if ! git branch | grep try-merge >/dev/null; then
-            log_and_run git branch try-merge origin/master
+            log_and_run git branch try-merge origin/${branch}
         fi
         log_and_run git checkout try-merge
 
         # Attempt to merge with spec/master.
-        log_and_run git reset origin/master --hard
+        log_and_run git reset origin/${branch} --hard
         try_log_and_run git merge -q spec/master -m "merged"
         if [ $? -ne 0 ]; then
             # Ignore merge conflicts in non-test directories.
@@ -103,9 +105,14 @@ failed_repos=
 
 for repo in ${repos}; do
     echo "++ updating ${repo}"
-    update_repo ${repo}
+    if [ "${repo}" = "simd" ]; then
+      branch=main
+    else
+      branch=master
+    fi
+    update_repo ${repo} ${branch}
 
-    if ! merge_with_spec ${repo}; then
+    if ! merge_with_spec ${repo} ${branch}; then
         echo -e "!! error merging ${repo}, skipping\n"
         failed_repos="${failed_repos} ${repo}"
         continue
@@ -141,7 +148,7 @@ for repo in ${repos}; do
     if [ $(git status -s ${wast_dir} | wc -l) -ne 0 ]; then
         log_and_run git add ${wast_dir}/*.wast
 
-        repo_sha=$(git -C repos/${repo} log --max-count=1 --oneline origin/master| sed -e 's/ .*//')
+        repo_sha=$(git -C repos/${repo} log --max-count=1 --oneline origin/${branch}| sed -e 's/ .*//')
         echo "  ${repo}:" >> commit_message
         echo "    https://github.com/WebAssembly/${repo}/commit/${repo_sha}" >> commit_message
     fi

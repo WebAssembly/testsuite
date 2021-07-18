@@ -88,6 +88,12 @@
 (assert_return (invoke "i16x8.extmul_low_i8x16_s" (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255)
                                                   (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255))
                                                   (v128.const i16x8 1 1 1 1 1 1 1 1))
+(assert_return (invoke "i16x8.extmul_low_i8x16_s" (v128.const i8x16 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255)
+                                                  (v128.const i8x16 0 0 0 0 0 0 0 0 -128 -128 -128 -128 -128 -128 -128 -128))
+                                                  (v128.const i16x8 0 0 0 0 0 0 0 0))
+(assert_return (invoke "i16x8.extmul_low_i8x16_s" (v128.const i8x16 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 )
+                                                  (v128.const i8x16 -128 -128 -128 -128 -128 -128 -128 -128 0 0 0 0 0 0 0 0 ))
+                                                  (v128.const i16x8 128 128 128 128 128 128 128 128))
 
 ;; i16x8.extmul_high_i8x16_s
 (assert_return (invoke "i16x8.extmul_high_i8x16_s" (v128.const i8x16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -168,6 +174,12 @@
 (assert_return (invoke "i16x8.extmul_high_i8x16_s" (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255)
                                                    (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255))
                                                    (v128.const i16x8 1 1 1 1 1 1 1 1))
+(assert_return (invoke "i16x8.extmul_high_i8x16_s" (v128.const i8x16 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255)
+                                                  (v128.const i8x16 0 0 0 0 0 0 0 0 -128 -128 -128 -128 -128 -128 -128 -128))
+                                                  (v128.const i16x8 128 128 128 128 128 128 128 128))
+(assert_return (invoke "i16x8.extmul_high_i8x16_s" (v128.const i8x16 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 )
+                                                  (v128.const i8x16 -128 -128 -128 -128 -128 -128 -128 -128 0 0 0 0 0 0 0 0 ))
+                                                  (v128.const i16x8 0 0 0 0 0 0 0 0))
 
 ;; i16x8.extmul_low_i8x16_u
 (assert_return (invoke "i16x8.extmul_low_i8x16_u" (v128.const i8x16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -248,6 +260,12 @@
 (assert_return (invoke "i16x8.extmul_low_i8x16_u" (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255)
                                                   (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255))
                                                   (v128.const i16x8 -511 -511 -511 -511 -511 -511 -511 -511))
+(assert_return (invoke "i16x8.extmul_low_i8x16_u" (v128.const i8x16 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255)
+                                                  (v128.const i8x16 0 0 0 0 0 0 0 0 -128 -128 -128 -128 -128 -128 -128 -128))
+                                                  (v128.const i16x8 0 0 0 0 0 0 0 0))
+(assert_return (invoke "i16x8.extmul_low_i8x16_u" (v128.const i8x16 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 )
+                                                  (v128.const i8x16 -128 -128 -128 -128 -128 -128 -128 -128 0 0 0 0 0 0 0 0 ))
+                                                  (v128.const i16x8 32640 32640 32640 32640 32640 32640 32640 32640))
 
 ;; i16x8.extmul_high_i8x16_u
 (assert_return (invoke "i16x8.extmul_high_i8x16_u" (v128.const i8x16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -328,7 +346,12 @@
 (assert_return (invoke "i16x8.extmul_high_i8x16_u" (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255)
                                                    (v128.const i8x16 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255))
                                                    (v128.const i16x8 -511 -511 -511 -511 -511 -511 -511 -511))
-
+(assert_return (invoke "i16x8.extmul_high_i8x16_u" (v128.const i8x16 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255)
+                                                   (v128.const i8x16 0 0 0 0 0 0 0 0 -128 -128 -128 -128 -128 -128 -128 -128))
+                                                   (v128.const i16x8 32640 32640 32640 32640 32640 32640 32640 32640))
+(assert_return (invoke "i16x8.extmul_high_i8x16_u" (v128.const i8x16 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0)
+                                                   (v128.const i8x16 -128 -128 -128 -128 -128 -128 -128 -128 0 0 0 0 0 0 0 0))
+                                                   (v128.const i16x8 0 0 0 0 0 0 0 0))
 ;; type check
 (assert_invalid (module (func (result v128) (i16x8.extmul_low_i8x16_s (i32.const 0) (f32.const 0.0)))) "type mismatch")
 (assert_invalid (module (func (result v128) (i16x8.extmul_high_i8x16_s (i32.const 0) (f32.const 0.0)))) "type mismatch")

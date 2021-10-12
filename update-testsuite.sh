@@ -105,7 +105,11 @@ failed_repos=
 
 for repo in ${repos}; do
     echo "++ updating ${repo}"
-    if [ "${repo}" = "simd" ]; then
+    if [ "${repo}" = "simd" -o \
+         "${repo}" = "threads" -o \
+         "${repo}" = "exception-handling" -o \
+         "${repo}" = "memory64" -o \
+         "${repo}" = "host-bindings" ]; then
       branch=main
     else
       branch=master

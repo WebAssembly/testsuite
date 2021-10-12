@@ -12,10 +12,8 @@ repos='
   simd
   exception-handling
   gc
-  bulk-memory-operations
   tail-call
   host-bindings
-  reference-types
   annotations
   function-references
   memory64

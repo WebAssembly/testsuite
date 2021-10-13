@@ -4,7 +4,7 @@ set -e
 set -u
 set -o pipefail
 
-ignore_dirs='document interpreter test/harness'
+non_tests=":(exclude)test/"
 
 repos='
   spec
@@ -83,8 +83,8 @@ merge_with_spec() {
         if [ $? -ne 0 ]; then
             # Ignore merge conflicts in non-test directories.
             # We don't care about those changes.
-            try_log_and_run git checkout --ours ${ignore_dirs}
-            try_log_and_run git add ${ignore_dirs}
+            try_log_and_run git checkout --ours ${non_tests}
+            try_log_and_run git add ${non_tests}
             try_log_and_run git -c core.editor=true merge --continue
             if [ $? -ne 0 ]; then
                 git merge --abort

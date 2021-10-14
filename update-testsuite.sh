@@ -77,9 +77,9 @@ merge_with_spec() {
         fi
         log_and_run git checkout try-merge
 
-        # Attempt to merge with spec/master.
+        # Attempt to merge with spec/main.
         log_and_run git reset origin/${branch} --hard
-        try_log_and_run git merge -q spec/master -m "merged"
+        try_log_and_run git merge -q spec/main -m "merged"
         if [ $? -ne 0 ]; then
             # Ignore merge conflicts in non-test directories.
             # We don't care about those changes.

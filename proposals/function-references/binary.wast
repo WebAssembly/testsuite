@@ -1760,6 +1760,6 @@
     "\02\00"
     "\0b"                      ;; end
   )
-  "junk after last section"
+  "unexpected content after last section"
 )
 

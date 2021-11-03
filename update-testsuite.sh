@@ -17,6 +17,7 @@ repos='
   annotations
   function-references
   memory64
+  extended-const
 '
 
 log_and_run() {
@@ -103,14 +104,13 @@ failed_repos=
 
 for repo in ${repos}; do
     echo "++ updating ${repo}"
-    if [ "${repo}" = "simd" -o \
-         "${repo}" = "threads" -o \
-         "${repo}" = "exception-handling" -o \
-         "${repo}" = "memory64" -o \
-         "${repo}" = "host-bindings" ]; then
-      branch=main
-    else
+    if [ "${repo}" = "gc" -o \
+         "${repo}" = "tail-call" -o \
+         "${repo}" = "annotations" -o \
+         "${repo}" = "function-references" ]; then
       branch=master
+    else
+      branch=main
     fi
     update_repo ${repo} ${branch}
 

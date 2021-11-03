@@ -18,6 +18,7 @@ repos='
   function-references
   memory64
   extended-const
+  multi-memory
 '
 
 log_and_run() {
@@ -107,7 +108,8 @@ for repo in ${repos}; do
     if [ "${repo}" = "gc" -o \
          "${repo}" = "tail-call" -o \
          "${repo}" = "annotations" -o \
-         "${repo}" = "function-references" ]; then
+         "${repo}" = "function-references" -o \
+         "${repo}" = "multi-memory" ]; then
       branch=master
     else
       branch=main

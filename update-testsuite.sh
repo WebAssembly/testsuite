@@ -9,7 +9,6 @@ non_tests=":(exclude)test/"
 repos='
   spec
   threads
-  simd
   exception-handling
   gc
   tail-call
@@ -108,8 +107,7 @@ for repo in ${repos}; do
     if [ "${repo}" = "gc" -o \
          "${repo}" = "tail-call" -o \
          "${repo}" = "annotations" -o \
-         "${repo}" = "function-references" -o \
-         "${repo}" = "multi-memory" ]; then
+         "${repo}" = "function-references" ]; then
       branch=master
     else
       branch=main

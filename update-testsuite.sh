@@ -9,7 +9,6 @@ non_tests=":(exclude)test/"
 repos='
   spec
   threads
-  simd
   exception-handling
   gc
   tail-call

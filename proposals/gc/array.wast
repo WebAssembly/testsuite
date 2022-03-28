@@ -12,7 +12,7 @@
   (type (array (ref 0)))
   (type (array (ref null 1)))
   (type (array (rtt 1)))
-  (type (array (rtt 10 1)))
+  (type (array (rtt 10)))
   (type (array (mut i8)))
   (type (array (mut i16)))
   (type (array (mut i32)))
@@ -24,7 +24,7 @@
   (type (array (mut (ref 0))))
   (type (array (mut (ref null i31))))
   (type (array (mut (rtt 0))))
-  (type (array (mut (rtt 10 0))))
+  (type (array (mut (rtt 10))))
 )
 
 
@@ -39,8 +39,10 @@
 ;; Binding structure
 
 (module
-  (type $s0 (array (ref $s1)))
-  (type $s1 (array (ref $s0)))
+  (rec
+    (type $s0 (array (ref $s1)))
+    (type $s1 (array (ref $s0)))
+  )
 
   (func (param (ref $forward)))
 
@@ -63,13 +65,18 @@
   (type $vec (array f32))
   (type $mvec (array (mut f32)))
 
+  (global (ref $vec) (array.new $vec (f32.const 1) (i32.const 3) (rtt.canon $vec)))
+  (global (ref $vec) (array.new_default $vec (i32.const 3) (rtt.canon $vec)))
+
+  (func $new (export "new") (result (ref $vec))
+    (array.new_default $vec (i32.const 3) (rtt.canon $vec))
+  )
+
   (func $get (param $i i32) (param $v (ref $vec)) (result f32)
     (array.get $vec (local.get $v) (local.get $i))
   )
   (func (export "get") (param $i i32) (result f32)
-    (call $get (local.get $i)
-      (array.new_default $vec (i32.const 3) (rtt.canon $vec))
-    )
+    (call $get (local.get $i) (call $new))
   )
 
   (func $set_get (param $i i32) (param $v (ref $mvec)) (param $y f32) (result f32)
@@ -83,20 +90,171 @@
     )
   )
 
-  (func $len (param $v (ref $vec)) (result i32)
-    (array.len $vec (local.get $v))
+  (func $len (param $v (ref array)) (result i32)
+    (array.len (local.get $v))
   )
   (func (export "len") (result i32)
-    (call $len (array.new_default $vec (i32.const 3) (rtt.canon $vec)))
+    (call $len (call $new))
   )
 )
 
+(assert_return (invoke "new") (ref.array))
+(assert_return (invoke "new") (ref.data))
 (assert_return (invoke "get" (i32.const 0)) (f32.const 0))
 (assert_return (invoke "set_get" (i32.const 1) (f32.const 7)) (f32.const 7))
 (assert_return (invoke "len") (i32.const 3))
 
 (assert_trap (invoke "get" (i32.const 10)) "out of bounds")
 (assert_trap (invoke "set_get" (i32.const 10) (f32.const 7)) "out of bounds")
+
+(module
+  (type $vec (array f32))
+  (type $mvec (array (mut f32)))
+
+  (global (ref $vec) (array.new_fixed $vec 2 (f32.const 1) (f32.const 2) (rtt.canon $vec)))
+
+  (func $new (export "new") (result (ref $vec))
+    (array.new_fixed $vec 2 (f32.const 1) (f32.const 2) (rtt.canon $vec))
+  )
+
+  (func $get (param $i i32) (param $v (ref $vec)) (result f32)
+    (array.get $vec (local.get $v) (local.get $i))
+  )
+  (func (export "get") (param $i i32) (result f32)
+    (call $get (local.get $i) (call $new))
+  )
+
+  (func $set_get (param $i i32) (param $v (ref $mvec)) (param $y f32) (result f32)
+    (array.set $mvec (local.get $v) (local.get $i) (local.get $y))
+    (array.get $mvec (local.get $v) (local.get $i))
+  )
+  (func (export "set_get") (param $i i32) (param $y f32) (result f32)
+    (call $set_get (local.get $i)
+      (array.new_fixed $mvec 3 (f32.const 1) (f32.const 2) (f32.const 3) (rtt.canon $mvec))
+      (local.get $y)
+    )
+  )
+
+  (func $len (param $v (ref array)) (result i32)
+    (array.len (local.get $v))
+  )
+  (func (export "len") (result i32)
+    (call $len (call $new))
+  )
+)
+
+(assert_return (invoke "new") (ref.array))
+(assert_return (invoke "new") (ref.data))
+(assert_return (invoke "get" (i32.const 0)) (f32.const 1))
+(assert_return (invoke "set_get" (i32.const 1) (f32.const 7)) (f32.const 7))
+(assert_return (invoke "len") (i32.const 2))
+
+(assert_trap (invoke "get" (i32.const 10)) "out of bounds")
+(assert_trap (invoke "set_get" (i32.const 10) (f32.const 7)) "out of bounds")
+
+(module
+  (type $vec (array i8))
+  (type $mvec (array (mut i8)))
+
+  (data $d "\00\01\02\03\04")
+
+  (func $new (export "new") (result (ref $vec))
+    (array.new_data $vec $d (i32.const 1) (i32.const 3) (rtt.canon $vec))
+  )
+
+  (func $get (param $i i32) (param $v (ref $vec)) (result i32)
+    (array.get_u $vec (local.get $v) (local.get $i))
+  )
+  (func (export "get") (param $i i32) (result i32)
+    (call $get (local.get $i) (call $new))
+  )
+
+  (func $set_get (param $i i32) (param $v (ref $mvec)) (param $y i32) (result i32)
+    (array.set $mvec (local.get $v) (local.get $i) (local.get $y))
+    (array.get_u $mvec (local.get $v) (local.get $i))
+  )
+  (func (export "set_get") (param $i i32) (param $y i32) (result i32)
+    (call $set_get (local.get $i)
+      (array.new_data $mvec $d (i32.const 1) (i32.const 3) (rtt.canon $mvec))
+      (local.get $y)
+    )
+  )
+
+  (func $len (param $v (ref array)) (result i32)
+    (array.len (local.get $v))
+  )
+  (func (export "len") (result i32)
+    (call $len (call $new))
+  )
+)
+
+(assert_return (invoke "new") (ref.array))
+(assert_return (invoke "new") (ref.data))
+(assert_return (invoke "get" (i32.const 0)) (i32.const 1))
+(assert_return (invoke "set_get" (i32.const 1) (i32.const 7)) (i32.const 7))
+(assert_return (invoke "len") (i32.const 3))
+
+(assert_trap (invoke "get" (i32.const 10)) "out of bounds")
+(assert_trap (invoke "set_get" (i32.const 10) (i32.const 7)) "out of bounds")
+
+(module
+  (type $bvec (array i8))
+  (type $vec (array (ref $bvec)))
+  (type $mvec (array (mut (ref $bvec))))
+  (type $nvec (array (ref null $bvec)))
+  (type $avec (array (mut anyref)))
+
+  (elem $e (ref $bvec)
+    (array.new $bvec (i32.const 7) (i32.const 3) (rtt.canon $bvec))
+    (array.new_fixed $bvec 2 (i32.const 1) (i32.const 2) (rtt.canon $bvec))
+  )
+
+  (func $new (export "new") (result (ref $vec))
+    (array.new_elem $vec $e (i32.const 0) (i32.const 2) (rtt.canon $vec))
+  )
+
+  (func $sub1 (result (ref $nvec))
+    (array.new_elem $nvec $e (i32.const 0) (i32.const 2) (rtt.canon $nvec))
+  )
+  (func $sub2 (result (ref $avec))
+    (array.new_elem $avec $e (i32.const 0) (i32.const 2) (rtt.canon $avec))
+  )
+
+  (func $get (param $i i32) (param $j i32) (param $v (ref $vec)) (result i32)
+    (array.get_u $bvec (array.get $vec (local.get $v) (local.get $i)) (local.get $j))
+  )
+  (func (export "get") (param $i i32) (param $j i32) (result i32)
+    (call $get (local.get $i) (local.get $j) (call $new))
+  )
+
+  (func $set_get (param $i i32) (param $j i32) (param $v (ref $mvec)) (param $y i32) (result i32)
+    (array.set $mvec (local.get $v) (local.get $i) (array.get $mvec (local.get $v) (local.get $y)))
+    (array.get_u $bvec (array.get $mvec (local.get $v) (local.get $i)) (local.get $j))
+  )
+  (func (export "set_get") (param $i i32) (param $j i32) (param $y i32) (result i32)
+    (call $set_get (local.get $i) (local.get $j)
+      (array.new_elem $mvec $e (i32.const 0) (i32.const 2) (rtt.canon $mvec))
+      (local.get $y)
+    )
+  )
+
+  (func $len (param $v (ref array)) (result i32)
+    (array.len (local.get $v))
+  )
+  (func (export "len") (result i32)
+    (call $len (call $new))
+  )
+)
+
+(assert_return (invoke "new") (ref.array))
+(assert_return (invoke "new") (ref.data))
+(assert_return (invoke "get" (i32.const 0) (i32.const 0)) (i32.const 7))
+(assert_return (invoke "get" (i32.const 1) (i32.const 0)) (i32.const 1))
+(assert_return (invoke "set_get" (i32.const 0) (i32.const 1) (i32.const 1)) (i32.const 2))
+(assert_return (invoke "len") (i32.const 2))
+
+(assert_trap (invoke "get" (i32.const 10) (i32.const 0)) "out of bounds")
+(assert_trap (invoke "set_get" (i32.const 10) (i32.const 0) (i32.const 0)) "out of bounds")
 
 (assert_invalid
   (module
@@ -106,6 +264,33 @@
     )
   )
   "array is immutable"
+)
+
+(assert_invalid
+  (module
+    (type $bvec (array i8))
+
+    (data $d "\00\01\02\03\04")
+
+    (global (ref $bvec)
+      (array.new_data $bvec $d (i32.const 1) (i32.const 3) (rtt.canon $bvec))
+    )
+  )
+  "constant expression required"
+)
+
+(assert_invalid
+  (module
+    (type $bvec (array i8))
+    (type $vvec (array (ref $bvec)))
+
+    (elem $e (ref $bvec) (ref.null $bvec))
+
+    (global (ref $vvec)
+      (array.new_elem $vvec $e (i32.const 0) (i32.const 1) (rtt.canon $vvec))
+    )
+  )
+  "constant expression required"
 )
 
 

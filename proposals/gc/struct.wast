@@ -30,8 +30,10 @@
 ;; Binding structure
 
 (module
-  (type $s0 (struct (field (ref 0) (ref 1) (ref $s0) (ref $s1))))
-  (type $s1 (struct (field (ref 0) (ref 1) (ref $s0) (ref $s1))))
+  (rec
+    (type $s0 (struct (field (ref 0) (ref 1) (ref $s0) (ref $s1))))
+    (type $s1 (struct (field (ref 0) (ref 1) (ref $s0) (ref $s1))))
+  )
 
   (func (param (ref $forward)))
 
@@ -52,6 +54,13 @@
 
 (module
   (type $vec (struct (field f32) (field $y (mut f32)) (field $z f32)))
+
+  (global (ref $vec) (struct.new $vec (f32.const 1) (f32.const 2) (f32.const 3) (rtt.canon $vec)))
+  (global (ref $vec) (struct.new_default $vec (rtt.canon $vec)))
+
+  (func (export "new") (result anyref)
+    (struct.new_default $vec (rtt.canon $vec))
+  )
 
   (func $get_0 (param $v (ref $vec)) (result f32)
     (struct.get $vec 0 (local.get $v))
@@ -77,6 +86,7 @@
   )
 )
 
+(assert_return (invoke "new") (ref.data))
 (assert_return (invoke "get_0") (f32.const 0))
 (assert_return (invoke "set_get_y" (f32.const 7)) (f32.const 7))
 (assert_return (invoke "set_get_1" (f32.const 7)) (f32.const 7))

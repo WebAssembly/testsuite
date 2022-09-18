@@ -18,6 +18,7 @@ repos='
   memory64
   extended-const
   multi-memory
+  relaxed-simd
 '
 
 log_and_run() {

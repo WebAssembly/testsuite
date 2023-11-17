@@ -15,4 +15,4 @@ mirror repository.
 
 To update the tests in this repo from their upstream sources:
 
-1. Run `update-tests.sh`
+1. Run `update-testsuite.sh`

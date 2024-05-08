@@ -123,7 +123,14 @@ for repo in ${repos}; do
             for new in $(find test/core -name \*.wast); do
                 old=../../repos/spec/${new}
                 if [[ ! -f ${old} ]] || ! diff ${old} ${new} >/dev/null; then
-                    log_and_run cp ${new} ../../${wast_dir}
+                    log_and_run cp ${new} ../../${wast_dir}/
+                fi
+            done
+            for new in $(find test/legacy -name \*.wast); do
+                old=../../repos/spec/${new}
+                if [[ ! -f ${old} ]] || ! diff ${old} ${new} >/dev/null; then
+                    mkdir -p ../../${wast_dir}/legacy/
+                    log_and_run cp ${new} ../../${wast_dir}/legacy/
                 fi
             done
         popdir

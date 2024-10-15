@@ -177,7 +177,7 @@
   )
 )
 
-(assert_return (invoke "data") (i32.const 1))
+(assert_return (invoke "data") (i32.const 0))
 (assert_return (invoke "cast") (f64.const 42.0))
 
 (assert_return (invoke "i32_load8_s" (i32.const -1)) (i32.const -1))

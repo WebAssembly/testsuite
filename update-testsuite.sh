@@ -12,13 +12,13 @@ repos='
   exception-handling
   gc
   tail-call
-  host-bindings
   annotations
   function-references
   memory64
   extended-const
   multi-memory
   relaxed-simd
+  custom-page-sizes
 '
 
 log_and_run() {

@@ -19,6 +19,7 @@ repos='
   multi-memory
   relaxed-simd
   custom-page-sizes
+  wide-arithmetic
 '
 
 log_and_run() {

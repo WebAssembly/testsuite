@@ -66,10 +66,19 @@ update_repo() {
     popdir
 }
 
+set_upstream() {
+    local repo=$1
+    upstream="main"
+    [ "${repo}" == "memory64" ] && upstream="wasm-3.0"
+    echo "set_upstream $upstream"
+}
+
 merge_with_spec() {
     local repo=$1
 
     [ "${repo}" == "spec" ] && return
+
+    set_upstream ${repo}
 
     pushdir repos/${repo}
         # Create and checkout "try-merge" branch.
@@ -78,9 +87,9 @@ merge_with_spec() {
         fi
         log_and_run git checkout try-merge
 
-        # Attempt to merge with spec/main.
+        # Attempt to merge with upstream branch in spec repo.
         log_and_run git reset origin/HEAD --hard
-        try_log_and_run git merge -q spec/main -m "merged"
+        try_log_and_run git merge -q spec/$upstream -m "merged"
         if [ $? -ne 0 ]; then
             # Ignore merge conflicts in non-test directories.
             # We don't care about those changes.
@@ -118,7 +127,15 @@ for repo in ${repos}; do
         log_and_run cp $(find repos/${repo}/test/core -name \*.wast) ${wast_dir}
     else
         wast_dir=proposals/${repo}
+        # Start by removing any existing test files for this proposal.
+        log_and_run rm -rf ${wast_dir}/
         mkdir -p ${wast_dir}
+
+        # Checkout the corresponding upstream branch in the spec repo
+        set_upstream ${repo}
+        pushdir repos/spec
+          try_log_and_run git checkout origin/${upstream}
+        popdir
 
         # Don't add tests from proposal that are the same as spec.
         pushdir repos/${repo}

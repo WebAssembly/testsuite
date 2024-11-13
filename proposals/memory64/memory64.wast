@@ -5,6 +5,8 @@
 (module (memory i64 0 1))
 (module (memory i64 1 256))
 (module (memory i64 0 65536))
+(module (memory i64 0x1_0000_0000_0000))
+(module (memory i64 0 0x1_0000_0000_0000))
 
 (module (memory i64 (data)) (func (export "memsize") (result i64) (memory.size)))
 (assert_return (invoke "memsize") (i64.const 0))
@@ -46,6 +48,24 @@
 (assert_invalid
   (module (memory i64 1 0))
   "size minimum must not be greater than maximum"
+)
+
+(assert_invalid
+  (module (memory i64 0x1_0000_0000_0001))
+  "memory size"
+)
+(assert_invalid
+  (module (memory i64 0 0x1_0000_0000_0001))
+  "memory size"
+)
+
+(assert_invalid
+  (module (memory (import "M" "m") i64 0x1_0000_0000_0001))
+  "memory size"
+)
+(assert_invalid
+  (module (memory (import "M" "m") i64 0 0x1_0000_0000_0001))
+  "memory size"
 )
 
 (module

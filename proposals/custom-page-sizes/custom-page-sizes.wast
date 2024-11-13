@@ -106,3 +106,33 @@
 (module
   (memory (import "m" "large-pages-memory") 0 (pagesize 65536))
 )
+
+;; Inline data segments
+
+;; pagesize 0
+(assert_malformed (module quote "(memory (pagesize 0) (data))") "invalid custom page size")
+
+;; pagesize 1
+(module
+  (memory (pagesize 1) (data "xyz"))
+  (func (export "size") (result i32)
+    memory.size)
+  (func (export "grow") (param i32) (result i32)
+    (memory.grow (local.get 0)))
+  (func (export "load") (param i32) (result i32)
+    (i32.load8_u (local.get 0))))
+
+(assert_return (invoke "size") (i32.const 3))
+(assert_return (invoke "load" (i32.const 0)) (i32.const 120))
+(assert_return (invoke "load" (i32.const 1)) (i32.const 121))
+(assert_return (invoke "load" (i32.const 2)) (i32.const 122))
+(assert_trap (invoke "load" (i32.const 3)) "out of bounds")
+(assert_return (invoke "grow" (i32.const 1)) (i32.const -1))
+
+;; pagesize 65536
+(module
+  (memory (pagesize 65536) (data "xyz"))
+  (func (export "size") (result i32)
+        memory.size))
+
+(assert_return (invoke "size") (i32.const 1))

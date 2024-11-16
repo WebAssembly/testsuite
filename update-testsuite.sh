@@ -20,6 +20,7 @@ repos='
   relaxed-simd
   custom-page-sizes
   wide-arithmetic
+  wasm-3.0
 '
 
 log_and_run() {
@@ -44,18 +45,22 @@ popdir() {
 }
 
 update_repo() {
-    local repo=$1
+    local dir=$1
+    local branch=main
+    local repo=$dir
+    [ "${repo}" == "wasm-3.0" ] && branch="wasm-3.0"
+    [ "${repo}" == "wasm-3.0" ] && repo="spec"
     pushdir repos
-        if [ -d ${repo} ]; then
-            log_and_run git -C ${repo} fetch origin
-            log_and_run git -C ${repo} reset origin/HEAD --hard
+        if [ -d ${dir} ]; then
+            log_and_run git -C ${dir} fetch origin
+            log_and_run git -C ${dir} reset origin/${branch} --hard
         else
-            log_and_run git clone https://github.com/WebAssembly/${repo}
+            log_and_run git clone https://github.com/WebAssembly/${repo} ${dir} --branch ${branch}
         fi
 
         # Add upstream spec as "spec" remote.
-        if [ "${repo}" != "spec" ]; then
-            pushdir ${repo}
+        if [ "${dir}" != "spec" ]; then
+            pushdir ${dir}
                 if ! git remote | grep spec >/dev/null; then
                     log_and_run git remote add spec https://github.com/WebAssembly/spec
                 fi
@@ -79,6 +84,8 @@ merge_with_spec() {
     [ "${repo}" == "spec" ] && return
 
     set_upstream ${repo}
+
+    [ "${repo}" == "wasm-3.0" ] && return
 
     pushdir repos/${repo}
         # Create and checkout "try-merge" branch.
@@ -122,6 +129,7 @@ for repo in ${repos}; do
         continue
     fi
 
+    echo "++ updating222 ${repo}"
     if [ "${repo}" = "spec" ]; then
         wast_dir=.
         log_and_run cp $(find repos/${repo}/test/core -name \*.wast) ${wast_dir}
@@ -165,10 +173,14 @@ for repo in ${repos}; do
 
     # Check whether any files were updated.
     if [ $(git status -s ${wast_dir} | wc -l) -ne 0 ]; then
-        log_and_run git add ${wast_dir}/*.wast
+        log_and_run git add ${wast_dir}
 
-        repo_sha=$(git -C repos/${repo} log --max-count=1 --oneline origin/HEAD| sed -e 's/ .*//')
-        echo "  ${repo}:" >> commit_message
+        branch=main
+        dir=${repo}
+        [ "${repo}" == "wasm-3.0" ] && branch="wasm-3.0"
+        [ "${repo}" == "wasm-3.0" ] && repo="spec"
+        repo_sha=$(git -C repos/${dir} log --max-count=1 --oneline origin/$branch | sed -e 's/ .*//')
+        echo "  ${dir}:" >> commit_message
         echo "    https://github.com/WebAssembly/${repo}/commit/${repo_sha}" >> commit_message
         any_updated=1
     fi

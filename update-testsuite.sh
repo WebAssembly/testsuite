@@ -48,8 +48,10 @@ update_repo() {
     local dir=$1
     local branch=main
     local repo=$dir
-    [ "${repo}" == "wasm-3.0" ] && branch="wasm-3.0"
-    [ "${repo}" == "wasm-3.0" ] && repo="spec"
+    if [ "${repo}" == "wasm-3.0" ]; then
+      branch="wasm-3.0"
+      repo="spec"
+    fi
     pushdir repos
         if [ -d ${dir} ]; then
             log_and_run git -C ${dir} fetch origin
@@ -85,17 +87,18 @@ merge_with_spec() {
 
     set_upstream ${repo}
 
-    [ "${repo}" == "wasm-3.0" ] && return
+    local head_ref=origin/HEAD
+    [ "${repo}" == "wasm-3.0" ] && head_ref=origin/wasm-3.0
 
     pushdir repos/${repo}
         # Create and checkout "try-merge" branch.
         if ! git branch | grep try-merge >/dev/null; then
-            log_and_run git branch try-merge origin/HEAD
+            log_and_run git branch try-merge $head_ref
         fi
         log_and_run git checkout try-merge
 
         # Attempt to merge with upstream branch in spec repo.
-        log_and_run git reset origin/HEAD --hard
+        log_and_run git reset $head_ref --hard
         try_log_and_run git merge -q spec/$upstream -m "merged"
         if [ $? -ne 0 ]; then
             # Ignore merge conflicts in non-test directories.
@@ -129,7 +132,6 @@ for repo in ${repos}; do
         continue
     fi
 
-    echo "++ updating222 ${repo}"
     if [ "${repo}" = "spec" ]; then
         wast_dir=.
         log_and_run cp $(find repos/${repo}/test/core -name \*.wast) ${wast_dir}
@@ -177,8 +179,10 @@ for repo in ${repos}; do
 
         branch=main
         dir=${repo}
-        [ "${repo}" == "wasm-3.0" ] && branch="wasm-3.0"
-        [ "${repo}" == "wasm-3.0" ] && repo="spec"
+        if [ "${repo}" == "wasm-3.0" ]; then
+          branch="wasm-3.0"
+          repo="spec"
+        fi
         repo_sha=$(git -C repos/${dir} log --max-count=1 --oneline origin/$branch | sed -e 's/ .*//')
         echo "  ${dir}:" >> commit_message
         echo "    https://github.com/WebAssembly/${repo}/commit/${repo_sha}" >> commit_message

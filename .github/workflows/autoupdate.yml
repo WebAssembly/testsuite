@@ -29,7 +29,7 @@ jobs:
       - run: |
           git config --global user.name 'WebAssembly/testsuite auto-update'
           git config --global user.email 'github-actions@users.noreply.github.com'
-          ./update-testsuite.sh
+          ./update-testsuite.py
 
       # If the current HEAD is different then a commit was made, so make a PR.
       - run: |

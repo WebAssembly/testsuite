@@ -20,5 +20,5 @@ This repository is updated weekly on Wednesday via automated pull requests.
 Maintainers can also
 [manually trigger an update](https://github.com/WebAssembly/testsuite/actions/workflows/autoupdate.yml).
 
-Contributors can update tests by running the `./update-testsuite.sh` script and
+Contributors can update tests by running the `./update-testsuite.py` script and
 making a pull request.

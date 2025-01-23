@@ -126,7 +126,7 @@
 (assert_return (invoke "load" (i32.const 0)) (i32.const 120))
 (assert_return (invoke "load" (i32.const 1)) (i32.const 121))
 (assert_return (invoke "load" (i32.const 2)) (i32.const 122))
-(assert_trap (invoke "load" (i32.const 3)) "out of bounds")
+(assert_trap (invoke "load" (i32.const 3)) "out of bounds memory access")
 (assert_return (invoke "grow" (i32.const 1)) (i32.const -1))
 
 ;; pagesize 65536

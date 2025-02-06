@@ -144,7 +144,6 @@ def main():
         Repo('tail-call'),
         Repo('annotations'),
         Repo('function-references'),
-        Repo('memory64', upstream=spec3),
         Repo('extended-const'),
         Repo('multi-memory'),
         Repo('relaxed-simd'),

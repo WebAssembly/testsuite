@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 
 
 class GitError(RuntimeError):
@@ -214,7 +215,8 @@ def main():
     if len(updated) == 0:
         print('No spec changes found, not creating a new commit')
         return 0
-    message = 'Update repos:\n\n'
+    today = datetime.now().strftime("%Y-%m-%d")
+    message = f'Auto-update for {today}\n\nUpdate repos:\n\n'
     for repo in updated:
         message += f'  {repo.dir}:\n'
         message += f'    {repo.url()}/commit/{repo.rev}\n'

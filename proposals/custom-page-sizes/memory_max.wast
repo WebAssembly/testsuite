@@ -23,14 +23,12 @@
   "unknown import")
 
 ;; Memory size just over the maximum.
-;;
-;; These are malformed (for pagesize 1)
-;; or invalid (for other pagesizes).
 
 ;; i32 (pagesize 1)
-(assert_malformed
-  (module quote "(memory 0x1_0000_0000 (pagesize 1))")
-  "constant out of range")
+(assert_invalid
+  (module
+    (memory 0x1_0000_0000 (pagesize 1)))
+  "memory size must be at most")
 
 ;; i32 (default pagesize)
 (assert_invalid

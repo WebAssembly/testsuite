@@ -140,13 +140,7 @@ def main():
     repos = [
         spec3,
         Repo('threads'),
-        Repo('exception-handling'),
-        Repo('gc'),
-        Repo('tail-call'),
         Repo('annotations'),
-        Repo('function-references'),
-        Repo('extended-const'),
-        Repo('multi-memory'),
         Repo('relaxed-simd'),
         Repo('custom-page-sizes'),
         Repo('wide-arithmetic'),

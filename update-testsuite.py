@@ -98,9 +98,9 @@ class Repo:
             # If the merge failed try to ignore merge conflicts in non-test
             # directories as we don't care about those changes
             non_tests = ':(exclude)test/'
-            Repo.git('checkout', '--ours', non_tests)
-            Repo.git('add', non_tests)
             try:
+                Repo.git('checkout', '--ours', non_tests)
+                Repo.git('add', non_tests)
                 Repo.git('-c', 'core.editor=true', 'merge', '--continue')
             except GitError:
                 # If all that failed then the merge couldn't be done.
@@ -135,13 +135,9 @@ class Repo:
 
 def main():
     spec = Repo('spec')
-    spec3 = Repo('spec', branch='wasm-3.0')
 
     repos = [
-        spec3,
         Repo('threads'),
-        Repo('annotations'),
-        Repo('relaxed-simd'),
         Repo('custom-page-sizes'),
         Repo('wide-arithmetic'),
     ]

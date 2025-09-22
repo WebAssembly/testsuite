@@ -2,11 +2,17 @@
 ;;
 ;; These modules are valid, but instantiating them is unnecessary
 ;; and would only allocate very large memories and slow down running
-;; the spec tests. Therefore, add a missing import so that it cannot
+;; the spec tests. Therefore, add an invalid import so that it cannot
 ;; be instantiated and use `assert_unlinkable`. This approach
 ;; enforces that the module itself is still valid, but that its
 ;; instantiation fails early (hopefully before any memories are
 ;; actually allocated).
+
+;; Helper module that exports a non-matching value.
+(module
+  (memory (export "unknown") 0))
+
+(register "test")
 
 ;; i32 (pagesize 1)
 (assert_unlinkable

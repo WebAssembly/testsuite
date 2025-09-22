@@ -68,7 +68,6 @@
   "out of bounds table access"
 )
 
-
 ;; Type errors
 
 (assert_invalid

@@ -140,6 +140,7 @@ def main():
         Repo('threads'),
         Repo('custom-page-sizes'),
         Repo('wide-arithmetic'),
+        Repo('custom-descriptors'),
     ]
 
     # Make sure that `repos` is a git repository

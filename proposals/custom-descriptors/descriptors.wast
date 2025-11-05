@@ -481,3 +481,198 @@
   )
   "sub type 2 does not match super type 0"
 )
+
+;; The comptypes of the described subtype and supertype must match.
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct (field i32))))
+      (type $A.desc (sub (describes $A) (struct)))
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (sub $A.desc (describes $B) (struct)))
+    )
+  )
+  "sub type 2 does not match super type 0"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct (field i32))))
+      (type $A.desc (sub (describes $A) (struct)))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (sub $A.desc (describes $B) (struct)))
+    )
+  )
+  "sub type 2 does not match super type 0"
+)
+
+;; The comptypes of the subtype and supertype must match even when only the
+;; subtype has a descriptor.
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (struct (field i32))))
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (describes $B) (struct))
+    )
+  )
+  "sub type 1 does not match super type 0"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (struct (field i32))))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (describes $B) (struct))
+    )
+  )
+  "sub type 1 does not match super type 0"
+)
+
+;; The comptypes of the descriptor subtype and supertype must match.
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (struct (field i32))))
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (struct (field i64))))
+    )
+  )
+  "sub type 3 does not match super type 1"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (struct (field i32))))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (struct (field i64))))
+    )
+  )
+  "sub type 3 does not match super type 1"
+)
+
+;; For types that have both describees and descriptors, valid describees should
+;; not mask invalid descriptors.
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub (describes $B.desc) (struct))) ;; Should be sub $A.meta
+    )
+  )
+  "descriptor type 5 does not match"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub (describes $B.desc) (struct))) ;; Should be sub $A.meta
+    )
+  )
+  "descriptor type 5 does not match"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct (field i32))))
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct (field i64))))
+    )
+  )
+  "sub type 5 does not match super type 2"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct (field i32))))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct)))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct (field i64))))
+    )
+  )
+  "sub type 5 does not match super type 2"
+)
+
+;; For types that have both describees and descriptors, valid descriptors should
+;; not mask invald describees.
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+      (type $B (sub (descriptor $B.desc) (struct))) ;; Should be sub $A
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct)))
+    )
+  )
+  "described type 3 does not match"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct)))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+    )
+    (rec
+      (type $B (sub (descriptor $B.desc) (struct))) ;; Should be sub $A
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct)))
+    )
+  )
+  "described type 3 does not match"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct (field i32))))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct)))
+    )
+  )
+  "sub type 3 does not match super type 0"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $A (sub (descriptor $A.desc) (struct (field i32))))
+      (type $A.desc (sub (describes $A) (descriptor $A.meta) (struct)))
+      (type $A.meta (sub (describes $A.desc) (struct)))
+    )
+    (rec
+      (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
+      (type $B.desc (sub $A.desc (describes $B) (descriptor $B.meta) (struct)))
+      (type $B.meta (sub $A.meta (describes $B.desc) (struct)))
+    )
+  )
+  "sub type 3 does not match super type 0"
+)

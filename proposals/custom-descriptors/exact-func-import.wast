@@ -211,3 +211,54 @@
 (assert_trap (invoke "exact-cast") "cast failure")
 (assert_trap (invoke "exact-br-on-cast") "unreachable")
 (assert_trap (invoke "exact-br-on-cast-fail") "unreachable")
+
+
+;; Test the binary format
+
+;; Exact function imports use 0x20.
+(module definition binary
+  "\00asm" "\01\00\00\00"
+  "\01"  ;; Type section id
+  "\04"  ;; Type section length
+  "\01"  ;; Types vector length
+  "\60"  ;; Function
+  "\00"  ;; Number of params
+  "\00"  ;; Number of results
+  "\02"  ;; Import section id
+  "\05"  ;; Import section length
+  "\01"  ;; Import vector length
+  "\00"  ;; Module name length
+  "\00"  ;; Base name length
+  "\20"  ;; Exact function
+  "\00"  ;; Type index
+)
+
+;; 0x20 is malformed in exports.
+(assert_malformed
+  (module binary
+    "\00asm" "\01\00\00\00"
+    "\01"  ;; Type section id
+    "\04"  ;; Type section length
+    "\01"  ;; Types vector length
+    "\60"  ;; Function
+    "\00"  ;; Number of params
+    "\00"  ;; Number of results
+    "\03"  ;; Function section id
+    "\02"  ;; Function section length
+    "\01"  ;; Function vector length
+    "\00"  ;; Type index
+    "\07"  ;; Export section id
+    "\04"  ;; Export section length
+    "\01"  ;; Export vector length
+    "\00"  ;; Name length
+    "\20"  ;; Exact func (malformed)
+    "\00"  ;; Function index
+    "\0a"  ;; Code section
+    "\04"  ;; Code section length
+    "\01"  ;; Code vector length
+    "\02"  ;; Function length
+    "\00"  ;; Type index
+    "\0b"  ;; End
+  )
+  "malformed export kind"
+)

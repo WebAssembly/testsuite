@@ -34,6 +34,7 @@ jobs:
       # If the current HEAD is different then a commit was made, so make a PR.
       - run: |
           if [ "${{ github.sha }}" != $(git rev-parse HEAD) ]; then
+            time=`date '+%Y-%m-%d'`
             branch=update-$time
             git checkout -b $branch
             git push origin $branch:$branch

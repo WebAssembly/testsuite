@@ -1126,13 +1126,13 @@
   (global $b2-exact (ref null (exact $b)) (struct.new $b))
   (global $b1 (ref null $b) (global.get $b1-exact))
   (global $b2 (ref null $b) (global.get $b2-exact))
-  (global $a1 (ref null $a) (struct.new $a (global.get $b1-exact)))
+  (global $a1 (ref null $a) (struct.new_desc $a (global.get $b1-exact)))
 
   (global $d1-exact (ref null (exact $d)) (struct.new $d))
   (global $d2-exact (ref null (exact $d)) (struct.new $d))
   (global $d1 (ref null $d) (global.get $d1-exact))
   (global $d2 (ref null $d) (global.get $d2-exact))
-  (global $c1 (ref null $c) (struct.new $c (global.get $d1-exact)))
+  (global $c1 (ref null $c) (struct.new_desc $c (global.get $d1-exact)))
 
   (global $c1-as-a (ref null $a) (global.get $c1))
 
@@ -1916,7 +1916,7 @@
 
   (global $b1 (ref (exact $b)) (struct.new $b))
   (global $b2 (ref (exact $b)) (struct.new $b))
-  (global $a1 (ref (exact $a)) (struct.new $a (global.get $b1)))
+  (global $a1 (ref (exact $a)) (struct.new_desc $a (global.get $b1)))
 
   (func $assert-eq-i32 (param i32 i32)
     (if

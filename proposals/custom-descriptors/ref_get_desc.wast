@@ -305,9 +305,9 @@
   (global $b1 (ref (exact $b)) (struct.new $b (i32.const 1)))
   (global $b2 (ref (exact $b)) (struct.new $b (i32.const 2)))
 
-  (global $a1 (ref null $a) (struct.new $a (global.get $b1)))
-  (global $a2 (ref null (exact $a)) (struct.new $a (global.get $b2)))
-  (global $a3 (ref (exact $a)) (struct.new $a (struct.new $b (i32.const 3))))
+  (global $a1 (ref null $a) (struct.new_desc $a (global.get $b1)))
+  (global $a2 (ref null (exact $a)) (struct.new_desc $a (global.get $b2)))
+  (global $a3 (ref (exact $a)) (struct.new_desc $a (struct.new $b (i32.const 3))))
 
   (global $null (ref null $a) (ref.null none))
   (global $null-exact (ref null (exact $a)) (ref.null (exact $a)))
@@ -315,10 +315,10 @@
   (func $null (result (ref null $a)) (ref.null none))
   (func $null-exact (result (ref null (exact $a))) (ref.null (exact $a)))
   (func $alloc-i32 (param i32) (result (ref (exact $a)))
-    (struct.new $a (struct.new $b (local.get 0)))
+    (struct.new_desc $a (struct.new $b (local.get 0)))
   )
   (func $alloc-desc (param (ref (exact $b))) (result (ref (exact $a)))
-    (struct.new $a (local.get 0))
+    (struct.new_desc $a (local.get 0))
   )
 
   (func (export "null") (result anyref)
@@ -346,7 +346,7 @@
   (func (export "alloc-0") (result i32)
     (struct.get $b 0
       (ref.get_desc $a
-        (struct.new $a
+        (struct.new_desc $a
           (struct.new $b
             (i32.const 0)
           )
@@ -374,13 +374,13 @@
     (local.set 0 (struct.new_default $b))
     (ref.eq
       (local.get 0)
-      (ref.get_desc $a (struct.new $a (local.get 0)))
+      (ref.get_desc $a (struct.new_desc $a (local.get 0)))
     )
   )
   (func (export "not-equal") (result i32)
     (ref.eq
       (struct.new_default $b)
-      (ref.get_desc $a (struct.new $a (struct.new_default $b)))
+      (ref.get_desc $a (struct.new_desc $a (struct.new_default $b)))
     )
   )
   (func (export "chain-equal") (result i32)
@@ -388,8 +388,8 @@
     (local $two (ref null (exact $two)))
     (local $one (ref null (exact $one)))
     (local.set $three (struct.new $three))
-    (local.set $two (struct.new $two (local.get $three)))
-    (local.set $one (struct.new $one (local.get $two)))
+    (local.set $two (struct.new_desc $two (local.get $three)))
+    (local.set $one (struct.new_desc $one (local.get $two)))
     (ref.eq
       (local.get $three)
       (ref.get_desc $two (ref.get_desc $one (local.get $one)))
@@ -426,7 +426,7 @@
   (global (export "b") (ref null (exact $b)) (struct.new $b))
 
   (func (export "make-a") (result (ref null $a))
-    (struct.new $a (global.get 0))
+    (struct.new_desc $a (global.get 0))
   )
 
   (func (export "check-eq") (param (ref null $a)) (result i32)
@@ -453,11 +453,11 @@
   )
 
   (func (export "imported-check-equal") (result i32)
-    (call $check-eq (struct.new $a (global.get $b)))
+    (call $check-eq (struct.new_desc $a (global.get $b)))
   )
 
   (func (export "imported-check-not-equal") (result i32)
-    (call $check-eq (struct.new $a (struct.new $b)))
+    (call $check-eq (struct.new_desc $a (struct.new $b)))
   )
 )
 

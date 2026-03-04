@@ -17,16 +17,28 @@
 ;; i64 (pagesize 1)
 (assert_unlinkable
   (module
-    (import "test" "import" (func))
+    (import "test" "unknown" (func))
     (memory i64 0xFFFF_FFFF_FFFF_FFFF (pagesize 1)))
-  "unknown import")
+  "incompatible import type")
+
+;; i64 (pagesize 1)
+(assert_unlinkable
+  (module
+    (import "test" "unknown" (memory i64 0xFFFF_FFFF_FFFF_FFFF (pagesize 1))))
+  "incompatible import type")
 
 ;; i64 (default pagesize)
 (assert_unlinkable
   (module
     (import "test" "unknown" (func))
     (memory i64 0x1_0000_0000_0000 (pagesize 65536)))
-  "unknown import")
+  "incompatible import type")
+
+;; i64 (default pagesize)
+(assert_unlinkable
+  (module
+    (import "test" "unknown" (memory i64 0x1_0000_0000_0000 (pagesize 65536))))
+  "incompatible import type")
 
 ;; Memory size just over the maximum.
 ;;
@@ -36,7 +48,7 @@
 ;; i64 (pagesize 1)
 (assert_malformed
   (module quote "(memory i64 0x1_0000_0000_0000_0000 (pagesize 1))")
-  "constant out of range")
+  "i64 constant out of range")
 
 ;; i64 (default pagesize)
 (assert_invalid

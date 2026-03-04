@@ -110,7 +110,7 @@
 ;; Inline data segments
 
 ;; pagesize 0
-(assert_malformed (module quote "(memory (pagesize 0) (data))") "invalid custom page size")
+(assert_malformed (module quote "(module (memory (pagesize 0) (data)))") "invalid custom page size")
 
 ;; pagesize 1
 (module

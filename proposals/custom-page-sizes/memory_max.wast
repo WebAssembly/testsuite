@@ -19,14 +19,26 @@
   (module
     (import "test" "unknown" (func))
     (memory 0xFFFF_FFFF (pagesize 1)))
-  "unknown import")
+  "incompatible import type")
+
+;; i32 (pagesize 1)
+(assert_unlinkable
+  (module
+    (import "test" "unknown" (memory 0xFFFF_FFFF (pagesize 1))))
+  "incompatible import type")
 
 ;; i32 (default pagesize)
 (assert_unlinkable
   (module
     (import "test" "unknown" (func))
     (memory 65536 (pagesize 65536)))
-  "unknown import")
+  "incompatible import type")
+
+;; i32 (default pagesize)
+(assert_unlinkable
+  (module
+    (import "test" "unknown" (memory 65536 (pagesize 65536))))
+  "incompatible import type")
 
 ;; Memory size just over the maximum.
 

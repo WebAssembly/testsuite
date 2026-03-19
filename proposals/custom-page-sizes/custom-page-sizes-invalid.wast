@@ -79,7 +79,7 @@
 
 ;; Power of two page size that cannot fit in a u64 to exercise checks against
 ;; shift overflow.
-(assert_malformed
+(assert_invalid
   (module binary
     "\00asm" "\01\00\00\00"
     "\05\04\01"                ;; Memory section
@@ -104,12 +104,12 @@
   (module
     (memory (import "m" "small-pages-memory") 0 (pagesize 65536))
   )
-  "memory types incompatible"
+  "incompatible import type"
 )
 
 (assert_unlinkable
   (module
     (memory (import "m" "large-pages-memory") 0 (pagesize 1))
   )
-  "memory types incompatible"
+  "incompatible import type"
 )

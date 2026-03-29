@@ -118,7 +118,7 @@ class Repo:
         This is used to run diffs and copy the test to its final location.
         """
         tests = []
-        for subdir in ['core', 'legacy']:
+        for subdir in ['core', 'legacy', 'custom']:
             for root, dirs, files in os.walk(f'repos/test/{subdir}'):
                 for file in files:
                     path = os.path.join(root, file)
@@ -127,8 +127,8 @@ class Repo:
                     if ext != '.wast':
                         continue
                     dst = os.path.basename(path)
-                    if subdir == 'legacy':
-                        dst = 'legacy/' + dst
+                    if subdir in ['legacy', 'custom']:
+                        dst = subdir + '/' + dst
                     tests.append((path, repo_path, dst))
         return tests
 
@@ -157,6 +157,7 @@ def main():
     spec.checkout_merge()
     tests = []
     for path, _repo_path, dst in spec.list_tests():
+        os.makedirs(os.path.dirname(dst) or '.', exist_ok=True)
         shutil.copyfile(path, dst)
         tests.append(dst)
     git('add', *tests, quiet=True)

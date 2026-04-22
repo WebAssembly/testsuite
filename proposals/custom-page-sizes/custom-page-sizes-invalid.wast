@@ -79,7 +79,7 @@
 
 ;; Power of two page size that cannot fit in a u64 to exercise checks against
 ;; shift overflow.
-(assert_invalid
+(assert_malformed
   (module binary
     "\00asm" "\01\00\00\00"
     "\05\04\01"                ;; Memory section

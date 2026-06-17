@@ -1,44 +1,21 @@
 ;; Maximum memory sizes.
-;;
-;; These modules are valid, but instantiating them is unnecessary
-;; and would only allocate very large memories and slow down running
-;; the spec tests. Therefore, add an invalid import so that it cannot
-;; be instantiated and use `assert_unlinkable`. This approach
-;; enforces that the module itself is still valid, but that its
-;; instantiation fails early (hopefully before any memories are
-;; actually allocated).
-
-;; Helper module that exports a non-matching value.
-(module
-  (memory (export "unknown") 0))
-
-(register "test")
 
 ;; i32 (pagesize 1)
-(assert_unlinkable
-  (module
-    (import "test" "unknown" (func))
-    (memory 0xFFFF_FFFF (pagesize 1)))
-  "incompatible import type")
+(module definition
+  (memory 0xFFFF_FFFF (pagesize 1)))
 
 ;; i32 (pagesize 1)
-(assert_unlinkable
-  (module
-    (import "test" "unknown" (memory 0xFFFF_FFFF (pagesize 1))))
-  "incompatible import type")
+(module definition
+  (import "a" "b" (memory 0xFFFF_FFFF (pagesize 1))))
 
 ;; i32 (default pagesize)
-(assert_unlinkable
-  (module
-    (import "test" "unknown" (func))
-    (memory 65536 (pagesize 65536)))
-  "incompatible import type")
+(module definition
+  (import "test" "unknown" (func))
+  (memory 65536 (pagesize 65536)))
 
 ;; i32 (default pagesize)
-(assert_unlinkable
-  (module
-    (import "test" "unknown" (memory 65536 (pagesize 65536))))
-  "incompatible import type")
+(module definition
+  (import "test" "unknown" (memory 65536 (pagesize 65536))))
 
 ;; Memory size just over the maximum.
 

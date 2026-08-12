@@ -32,6 +32,18 @@
   )
 )
 
+;; Descriptor and described types can have mismatched finality.
+(module
+  (rec
+    (type $a (sub final (descriptor $b) (struct)))
+    (type $b (sub (describes $a) (struct)))
+  )
+  (rec
+    (type $x (sub (descriptor $y) (struct)))
+    (type $y (sub final (describes $x) (struct)))
+  )
+)
+
 ;; Describes clause must precede descriptor clause.
 (assert_malformed
   (module quote

@@ -141,6 +141,7 @@ def main():
         Repo('custom-page-sizes'),
         Repo('wide-arithmetic'),
         Repo('custom-descriptors'),
+        Repo('acquire-release-atomics'),
     ]
 
     # Make sure that `repos` is a git repository

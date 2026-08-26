@@ -458,8 +458,14 @@
     (type $a (sub (descriptor $b) (struct)))
     (type $b (sub (describes $a) (struct)))
     (type $c (sub $a (descriptor $d) (struct)))
-    (type $d (sub $b (describes $c) (descriptor $e) (struct)))
-    (type $e (describes $d) (struct))
+    (type $d (sub $b (describes $c) (struct)))
+    (type $e (struct))
+  )
+
+  (rec
+    (type $s (sub (descriptor $s') (struct)))
+    (type $s' (sub (describes $s) (descriptor $s'') (struct)))
+    (type $s'' (sub (describes $s') (struct)))
   )
 
   ;; Cast to self
@@ -661,18 +667,18 @@
   )
 
   ;; Cast to descriptor type
-  (func (param (ref null any) (ref null $e)) (result (ref null $d))
+  (func (param (ref null any) (ref null $s'')) (result (ref null $s'))
     (block (result (ref any))
-      (br_on_cast_desc_eq 1 (ref null any) (ref null $d)
+      (br_on_cast_desc_eq 1 (ref null any) (ref null $s')
         (local.get 0)
         (local.get 1)
       )
     )
     (unreachable)
   )
-  (func (param (ref null any) (ref null (exact $e))) (result (ref null (exact $d)))
+  (func (param (ref null any) (ref null (exact $s''))) (result (ref null (exact $s')))
     (block (result (ref any))
-      (br_on_cast_desc_eq 1 (ref null any) (ref null (exact $d))
+      (br_on_cast_desc_eq 1 (ref null any) (ref null (exact $s'))
         (local.get 0)
         (local.get 1)
       )

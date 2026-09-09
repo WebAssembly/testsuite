@@ -32,17 +32,6 @@
   )
 )
 
-;; Descriptor and described types can have mismatched finality.
-(module
-  (rec
-    (type $a (sub final (descriptor $b) (struct)))
-    (type $b (sub (describes $a) (struct)))
-  )
-  (rec
-    (type $x (sub (descriptor $y) (struct)))
-    (type $y (sub final (describes $x) (struct)))
-  )
-)
 
 ;; Describes clause must precede descriptor clause.
 (assert_malformed
@@ -229,6 +218,44 @@
     )
   )
   "descriptor type must be a struct"
+)
+
+;; Descriptor and described types must have matching finality.
+(assert_invalid
+  (module
+    (rec
+      (type $a (sub final (descriptor $b) (struct)))
+      (type $b (sub (describes $a) (struct)))
+    )
+  )
+  "descriptor and described types have mismatched finality"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $x (sub (descriptor $y) (struct)))
+      (type $y (sub final (describes $x) (struct)))
+    )
+  )
+  "descriptor and described types have mismatched finality"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $a (descriptor $b) (struct))
+      (type $b (sub (describes $a) (struct)))
+    )
+  )
+  "descriptor and described types have mismatched finality"
+)
+(assert_invalid
+  (module
+    (rec
+      (type $x (sub (descriptor $y) (struct)))
+      (type $y (describes $x) (struct))
+    )
+  )
+  "descriptor and described types have mismatched finality"
 )
 
 ;; Subtyping
@@ -533,7 +560,7 @@
     (rec
       (type $A (sub (struct (field i32))))
       (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
-      (type $B.desc (describes $B) (struct))
+      (type $B.desc (sub (describes $B) (struct)))
     )
   )
   "sub type 1 does not match super type 0"
@@ -545,7 +572,7 @@
     )
     (rec
       (type $B (sub $A (descriptor $B.desc) (struct (field i64))))
-      (type $B.desc (describes $B) (struct))
+      (type $B.desc (sub (describes $B) (struct)))
     )
   )
   "sub type 1 does not match super type 0"

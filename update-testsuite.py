@@ -142,6 +142,7 @@ def main():
         Repo('wide-arithmetic'),
         Repo('custom-descriptors'),
         Repo('acquire-release-atomics'),
+        Repo('extended-name-section'),
     ]
 
     # Make sure that `repos` is a git repository

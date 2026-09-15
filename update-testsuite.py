@@ -143,6 +143,7 @@ def main():
         Repo('custom-descriptors'),
         Repo('acquire-release-atomics'),
         Repo('extended-name-section'),
+        Repo('compact-import-section'),
     ]
 
     # Make sure that `repos` is a git repository

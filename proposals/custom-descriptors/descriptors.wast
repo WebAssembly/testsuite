@@ -289,6 +289,21 @@
   )
 )
 
+(module
+  (rec
+    (type $A1 (sub (descriptor $A1.desc) (struct)))
+    (type $A1.desc (sub (describes $A1) (struct)))
+  )
+  (rec
+    (type $A2 (sub (descriptor $A2.desc) (struct)))
+    (type $A2.desc (sub (describes $A2) (struct)))
+  )
+  (rec
+    (type $B (sub $A1 (descriptor $B.desc) (struct)))
+    (type $B.desc (sub $A2.desc (describes $B) (struct)))
+  )
+)
+
 ;; If a subtype has a descriptor, its supertype have a descriptor that is the
 ;; supertype of the subtype's descriptor
 (assert_invalid

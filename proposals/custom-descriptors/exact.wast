@@ -135,6 +135,77 @@
   "\00"  ;; Immutable
 )
 
+;; Exact type index is decoded as u32 (not s32/s33), so 0x40 is type index 64
+;; and matches 5-byte u32 64 (\c0\80\80\80\00).
+(module binary
+  "\00asm" "\01\00\00\00"
+  "\01"      ;; Type section id
+  "\9a\01"   ;; Type section length (154)
+  "\43"      ;; Types vector length (67)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 0..7: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 8..15: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 16..23: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 24..31: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 32..39: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 40..47: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 48..55: (struct)
+  "\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00\5f\00"  ;; Types 56..63: (struct)
+  "\5f\01\7f\00"                          ;; Type 64: (struct (field i32))
+  "\50\00\5f\01\64\62\c0\80\80\80\00\01"  ;; Type 65: (sub (struct (field (mut (ref (exact 64))))))
+  "\4f\01\41\5f\01\64\62\40\01"           ;; Type 66: (sub final 65 (struct (field (mut (ref (exact 64))))))
+)
+
+;; Max u32 (0xffff_ffff) is a well-formed exact type index (rejected by s32).
+(assert_invalid
+  (module binary
+    "\00asm" "\01\00\00\00"
+    "\01"  ;; Type section id
+    "\0b"  ;; Type section length
+    "\01"  ;; Types vector length
+    "\60"  ;; Func
+    "\01"  ;; Number of params
+    "\64"  ;; Ref
+    "\62"  ;; Exact
+    "\ff\ff\ff\ff\0f"  ;; Type index 0xffff_ffff (u32)
+    "\00"  ;; Number of results
+  )
+  "unknown type"
+)
+
+;; Exact type index >= 2^32 is malformed (even when low 32 bits are valid type 0).
+(assert_malformed
+  (module binary
+    "\00asm" "\01\00\00\00"
+    "\01"  ;; Type section id
+    "\0b"  ;; Type section length
+    "\01"  ;; Types vector length
+    "\60"  ;; Func
+    "\01"  ;; Number of params
+    "\64"  ;; Ref
+    "\62"  ;; Exact
+    "\80\80\80\80\10"  ;; Type index 2^32
+    "\00"  ;; Number of results
+  )
+  "integer too large"
+)
+
+;; Overlong exact type index is malformed (even when value is valid type 0).
+(assert_malformed
+  (module binary
+    "\00asm" "\01\00\00\00"
+    "\01"  ;; Type section id
+    "\0c"  ;; Type section length
+    "\01"  ;; Types vector length
+    "\60"  ;; Func
+    "\01"  ;; Number of params
+    "\64"  ;; Ref
+    "\62"  ;; Exact
+    "\80\80\80\80\80\00"  ;; Type index 0 in 6 bytes
+    "\00"  ;; Number of results
+  )
+  "integer representation too long"
+)
+
 ;; Reference must be either nullable or non-nullable.
 (assert_malformed
   (module binary
@@ -151,7 +222,7 @@
   "malformed storage type"
 )
 
-;; Cannot repeat exactness prefix.
+;; Cannot repeat exactness prefix (second 0x62 is parsed as u32 type index 98).
 (assert_malformed
   (module binary
     "\00asm" "\01\00\00\00"
@@ -166,7 +237,7 @@
     "\00"  ;; Type index
     "\00"  ;; Immutable
   )
-  "malformed storage type"
+  "section size mismatch"
 )
 
 ;; Subtyping
